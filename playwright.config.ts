@@ -1,31 +1,33 @@
-import { defineConfig } from '@playwright/test';
+import 'dotenv/config';
+
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 
   // Folder where all test files are stored
   testDir: './tests',
 
-  // Run tests one by one (easy for learning)
+  // Maximum time allowed for one test
+  timeout: 60000,
+
+  // Run tests one by one
   fullyParallel: false,
 
   // HTML Report
-  reporter: 'html',
+  reporter: [
+  ['html'],
+  ['allure-playwright']
+],
 
   // Common settings
   use: {
-     baseURL: 'https://www.saucedemo.com/',
+    baseURL: process.env.BASE_URL,
 
     // Open browser in UI mode
     headless: false,
 
-    // Open browser in full screen
+    // Use full browser window
     viewport: null,
-
-    // Slow down every action by 1 second
-    launchOptions: {
-      args: ['--start-maximized'],
-      slowMo: 1000,
-    },
 
     // Capture screenshot only if test fails
     screenshot: 'only-on-failure',
@@ -37,12 +39,46 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
 
-  // We are learning only Chromium now
+  // Cross-browser projects
   projects: [
+
     {
       name: 'chromium',
-      use: {},
+
+      use: {
+        ...devices['Desktop Chrome'],
+
+        launchOptions: {
+          args: ['--start-maximized'],
+          slowMo: 1000,
+        },
+      },
     },
+
+    {
+      name: 'firefox',
+
+      use: {
+        ...devices['Desktop Firefox'],
+
+        launchOptions: {
+          slowMo: 1000,
+        },
+      },
+    },
+
+    {
+      name: 'webkit',
+
+      use: {
+        ...devices['Desktop Safari'],
+
+        launchOptions: {
+          slowMo: 1000,
+        },
+      },
+    },
+
   ],
 
 });

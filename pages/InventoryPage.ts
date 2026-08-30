@@ -60,7 +60,7 @@ export class InventoryPage{
 
     getProductName (productName : string) : Locator{
         const productCard = this.getProductCard(productName);
-        return productCard.getByText(productName);
+        return productCard.locator('[data-test="inventory-item-name"]');
     }
 
     async clickProduct(productName : string) : Promise<void>{

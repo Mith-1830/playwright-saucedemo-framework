@@ -1,36 +1,36 @@
-import {test , expect} from '@playwright/test';
-import { InventoryPage } from '../pages/InventoryPage';
-import { LoginPage } from '../pages/LoginPage';
+import {test , expect} from '../fixtures/baseTest';
+import testData from '../test-data/testData.json';
+import { SortOptions } from '../constants/sortOptions';
 
-test("Add Backpack to cart", async ({ page }) => {
+for (const product of testData.products) {
 
-    const loginPage = new LoginPage(page);
-    const inventoryPage = new InventoryPage(page);
+    test(`Add ${product.name} to cart @regression`, async ({ inventoryPage, page }) => {
 
-    await loginPage.navigateToLoginPage();
-    await loginPage.login("standard_user", "secret_sauce");
+        await inventoryPage.addProductToCart(product.name);
 
-    await inventoryPage.addProductToCart("Sauce Labs Bike Light");
+        const removeButton = inventoryPage.getRemoveButton(product.name);
+        await expect(removeButton).toBeVisible();
 
+        const productTitle = inventoryPage.getProductsTitle();
+        await expect(productTitle).toBeVisible();
 
-   const removeButton = inventoryPage.getRemoveButton("Sauce Labs Bike Light");
-   await expect(removeButton).toBeVisible();
+        const shoppingCart = inventoryPage.getShoppingCart();
+        await expect(shoppingCart).toBeVisible();
 
-   const productTitle = inventoryPage.getProductsTitle();
-   await expect(productTitle).toBeVisible();
+        await inventoryPage.selectSortOption(SortOptions.Z_TO_A);
 
-   const shoppingCart = inventoryPage.getShoppingCart();
-   await expect(shoppingCart).toBeVisible();
+        await expect(
+            inventoryPage.getFirstProductName()
+        ).toHaveText("Test.allTheThings() T-Shirt (Red)");
 
-   await inventoryPage.selectSortOption("za");
+        await inventoryPage.clickMenuButton();
 
-   await expect(inventoryPage.getFirstProductName())
-   .toHaveText("Test.allTheThings() T-Shirt (Red)");
+        await expect(
+            inventoryPage.getShoppingCartBadge()
+        ).toHaveText("1");
 
-   //await expect(inventoryPage.getShoppingCartBadge()).toHaveText("1");
+        await inventoryPage.clickLogoutLink();
 
-   await inventoryPage.clickMenuButton();
-   await expect(inventoryPage.getShoppingCartBadge()).toHaveText("1");
-   await inventoryPage.clickLogoutLink();
-   await expect(page).toHaveURL('https://www.saucedemo.com/');
-});
+        await expect(page).toHaveURL('https://www.saucedemo.com/');
+    });
+}
