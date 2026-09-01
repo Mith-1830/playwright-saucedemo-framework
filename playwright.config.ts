@@ -1,48 +1,80 @@
-import { defineConfig } from '@playwright/test';
+import 'dotenv/config';
+
+import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 
-  // Folder where all test files are stored
+  // Test files location
   testDir: './tests',
 
-  // Run tests one by one (easy for learning)
-  fullyParallel: false,
+  // Maximum time allowed for one test
+  timeout: 60000,
 
-  // HTML Report
-  reporter: 'html',
+  // Maximum time allowed for expect assertions
+  expect: {
+    timeout: 10000,
+  },
 
-  // Common settings
+  // Allow tests to run in parallel
+  fullyParallel: true,
+
+  // Fail the build if test.only is accidentally committed
+  forbidOnly: !!process.env.CI,
+
+  // Retry failed tests in CI
+  retries: process.env.CI ? 2 : 0,
+
+  // Number of workers
+  workers: process.env.CI ? 2 : undefined,
+
+  // Reporters
+  reporter: [
+    ['html'],
+    ['allure-playwright'],
+  ],
+
+  // Shared settings
   use: {
-     baseURL: 'https://www.saucedemo.com/',
 
-    // Open browser in UI mode
-    headless: false,
+    // Application URL
+    baseURL: process.env.BASE_URL,
 
-    // Open browser in full screen
-    viewport: null,
+    // Headless locally and in CI
+    headless: true,
 
-    // Slow down every action by 1 second
-    launchOptions: {
-      args: ['--start-maximized'],
-      slowMo: 1000,
-    },
-
-    // Capture screenshot only if test fails
+    // Capture screenshot when test fails
     screenshot: 'only-on-failure',
 
-    // Record video only if test fails
+    // Record video when test fails
     video: 'retain-on-failure',
 
-    // Collect trace only if test fails
+    // Collect trace when test fails
     trace: 'retain-on-failure',
   },
 
-  // We are learning only Chromium now
+  // Browser projects
   projects: [
+
     {
       name: 'chromium',
-      use: {},
+      use: {
+        ...devices['Desktop Chrome'],
+      },
     },
-  ],
 
+    {
+      name: 'firefox',
+      use: {
+        ...devices['Desktop Firefox'],
+      },
+    },
+
+    {
+      name: 'webkit',
+      use: {
+        ...devices['Desktop Safari'],
+      },
+    },
+
+  ],
 });

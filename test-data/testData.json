@@ -1,0 +1,19 @@
+{
+  "products": [
+    {
+      "name": "Sauce Labs Backpack"
+    },
+    {
+      "name": "Sauce Labs Bike Light"
+    },
+    {
+      "name": "Sauce Labs Bolt T-Shirt"
+    }
+  ],
+
+  "checkout": {
+    "firstName": "Mithun",
+    "lastName": "R I",
+    "postalCode": "643004"
+  }
+}

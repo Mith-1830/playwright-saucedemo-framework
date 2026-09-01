@@ -1,18 +1,13 @@
-import {test , expect} from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
+import { test } from '../fixtures/test-fixtures';
+import { expect } from '@playwright/test';
 
-test('Login page Opens', async ({page})=>{
+test('Login page Opens @smoke @regression', async ({ page, loginPage }) => {
 
-    const loginPage = new LoginPage(page);
-
-    await loginPage.navigateToLoginPage();
-    
     await expect(page).toHaveTitle('Swag Labs');
-
-    await loginPage.login("standard_user", "secret_sauce");
 
     await expect(page).toHaveURL(/inventory.html/);
 
     await expect(page.getByText('Products')).toBeVisible();
 
-})
+});
+
