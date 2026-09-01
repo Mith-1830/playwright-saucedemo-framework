@@ -4,81 +4,77 @@ import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
 
-  // Folder where all test files are stored
+  // Test files location
   testDir: './tests',
 
   // Maximum time allowed for one test
   timeout: 60000,
 
-  // Run tests one by one
-  fullyParallel: false,
+  // Maximum time allowed for expect assertions
+  expect: {
+    timeout: 10000,
+  },
 
-  // HTML Report
+  // Allow tests to run in parallel
+  fullyParallel: true,
+
+  // Fail the build if test.only is accidentally committed
+  forbidOnly: !!process.env.CI,
+
+  // Retry failed tests in CI
+  retries: process.env.CI ? 2 : 0,
+
+  // Number of workers
+  workers: process.env.CI ? 2 : undefined,
+
+  // Reporters
   reporter: [
-  ['html'],
-  ['allure-playwright']
-],
+    ['html'],
+    ['allure-playwright'],
+  ],
 
-  // Common settings
+  // Shared settings
   use: {
+
+    // Application URL
     baseURL: process.env.BASE_URL,
 
-    // Open browser in UI mode
-    headless: false,
+    // Headless locally and in CI
+    headless: true,
 
-    // Use full browser window
-    viewport: null,
-
-    // Capture screenshot only if test fails
+    // Capture screenshot when test fails
     screenshot: 'only-on-failure',
 
-    // Record video only if test fails
+    // Record video when test fails
     video: 'retain-on-failure',
 
-    // Collect trace only if test fails
+    // Collect trace when test fails
     trace: 'retain-on-failure',
   },
 
-  // Cross-browser projects
+  // Browser projects
   projects: [
 
     {
       name: 'chromium',
-
       use: {
         ...devices['Desktop Chrome'],
-
-        launchOptions: {
-          args: ['--start-maximized'],
-          slowMo: 1000,
-        },
       },
     },
 
     {
       name: 'firefox',
-
       use: {
         ...devices['Desktop Firefox'],
-
-        launchOptions: {
-          slowMo: 1000,
-        },
       },
     },
 
     {
       name: 'webkit',
-
       use: {
         ...devices['Desktop Safari'],
-
-        launchOptions: {
-          slowMo: 1000,
-        },
       },
     },
 
   ],
-
 });
