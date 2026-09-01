@@ -9,7 +9,9 @@ jobs:
     timeout-minutes: 60
     runs-on: ubuntu-latest
     env:
-      BASE_URL: ${{ vars.BASE_URL }}
+  BASE_URL: ${{ vars.BASE_URL }}
+  SAUCE_USERNAME: ${{ vars.SAUCE_USERNAME }}
+  SAUCE_PASSWORD: ${{ secrets.SAUCE_PASSWORD }}
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-node@v4
